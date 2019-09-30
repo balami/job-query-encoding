@@ -1,15 +1,10 @@
 import psycopg2 as pg
 from psycopg2 import sql
+from dbconnection import dbconnect
 import category_encoders as ce
 import pandas as pd
 import json
 import glob, os, re, math
-
-def dbconnect():
-    conn = pg.connect(user="", password="", host="", port="", database="")
-    cur = conn.cursor()
-    print("Connected to database\n")
-    return cur, conn
 
 def dbdisconnect():
     cur.close()
@@ -349,13 +344,13 @@ if __name__ == "__main__":
         encoded_col_dict = encoded_col_df.set_index('column_name').T.to_dict('list')
         tbl_df = table_df()
         encoded_tbl_df = encode_df(tbl_df)
-        # makecsv(encoded_tbl_df,"encoded_tbl_vectors.csv")
+        makecsv(encoded_tbl_df,"encoded_tbl_vectors.csv")
         encoded_tbl_dict = encoded_tbl_df.set_index('table_name').T.to_dict('list')
         op_df = operator_df()
-        encoded_op_df = encode_df(op_df)
-        # makecsv(encoded_operator_df,"encoded_op_vectors.csv")
-        encoded_op_dict = encoded_op_df.set_index('operator_type').T.to_dict('list')
-        query_dict = get_queries()
-        max_cardinality, min_cardinality = get_logcardinalities()
-        parse_queries()
+        encoded_operator_df = encode_df(op_df)
+        makecsv(encoded_operator_df,"encoded_op_vectors.csv")
+        encoded_op_dict = encoded_operator_df.set_index('operator_type').T.to_dict('list')
+        # query_dict = get_queries()
+        # max_cardinality, min_cardinality = get_logcardinalities()
+        # parse_queries()
         dbdisconnect()
