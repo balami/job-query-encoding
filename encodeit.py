@@ -72,6 +72,7 @@ def parse_queries():
     for filename, query_text in query_dict.items():
         print('Reading query...',filename)
         or_predicate_set = []
+        final_dict = {}
         cardinality = get_estimate(query_text)
         from_query_block = re.search("FROM(.+?)WHERE", query_text)
         from_block = from_query_block.group(1).strip()
@@ -84,12 +85,14 @@ def parse_queries():
         #To write the modified query to file
         # new_queryfile(filename,query_text,where_block,and_predicate_block)
         join_set, and_predicate_set, or_predicate_set = get_all_sets(modified_subquery,tbl_ref_list,or_predicate_set)
-        print('\nQuery Number:',filename,'\n','Table Set:',table_set,'\n Join Set:',join_set,'\n AND Predicate Set:',and_predicate_set,'\n OR Predicate Set:',or_predicate_set,'\n Nested OR Predicate Set:',and_or_predicate_set,'\nCardinality:',cardinality,'\n')
-        # write_json_file(table_set)
+        # print('\nQuery Number:',filename,'\n','Table Set:',table_set,'\n Join Set:',join_set,'\n AND Predicate Set:',and_predicate_set,'\n OR Predicate Set:',or_predicate_set,'\n Nested OR Predicate Set:',and_or_predicate_set,'\nCardinality:',cardinality,'\n')
+        final_dict.update({'Query Number': filename,'Tables': table_set, 'Joins': join_set, 'AND Predicate': and_predicate_set,'OR Predicate': or_predicate_set,'Nested OR Predicate': and_or_predicate_set,'Cardinality': cardinality})
+        write_json_file(final_dict,filename)
 
-def write_json_file(set):
-    with open('sets.json', 'a', encoding='utf-8') as f:
-        json.dump(set, f, ensure_ascii=False, indent=4)
+def write_json_file(final_dict,filename):
+    filename_json = filename.replace('.sql','.json')
+    with open(filename_json, 'w', encoding='utf-8') as f:
+        json.dump(final_dict, f, ensure_ascii=False, indent=4)
 
 def get_table_set(from_block):
     table_set = []
