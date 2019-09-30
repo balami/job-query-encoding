@@ -54,7 +54,7 @@ def new_queryfile(filename,query_text,where_block,and_predicate_block):
 def get_queries():
     query_dict = {}
     #read all query files in the JOB
-    allfiles = glob.glob('queries' + '/*.sql', recursive=True)
+    allfiles = glob.glob('test' + '/*.sql', recursive=True)
     for queryfile in allfiles:
         filename = os.path.basename(queryfile)
         with open(queryfile, 'r') as f:
@@ -66,21 +66,21 @@ def get_queries():
             if(min_match):
                 trimmed_contents = trimmed_contents.replace('MIN','')
             #make sure each opeartor (=,>,<,>=,<=,,!=) are separated by a leading and trailing whitespace character
-            op_list = ['\s=\S','\s>\S','\s<\S','\s!=\S','\s>=\S','\s<=\S']
-            new_trimmed_contents = add_lead_trail_spaces(op_list, trimmed_contents)
+            # op_list = ['\s=\S','\s>\S','\s<\S','\s!=\S','\s>=\S','\s<=\S']
+            # new_trimmed_contents = add_lead_trail_spaces(op_list, trimmed_contents)
             #store the query filename and the cleaned queries in a dictionary
-            query_dict[filename] = new_trimmed_contents
+            query_dict[filename] = trimmed_contents
     return query_dict
 
-def add_lead_trail_spaces(op_list, trimmed_contents):
-    for opr in op_list:
-        for opmatch in re.finditer(opr, trimmed_contents):
-            match_group = opmatch.group()
-            first_character = match_group[0]
-            last_character = match_group[-1]
-            text_to_replace = match_group.replace(last_character,' '+ last_character)
-            trimmed_contents = trimmed_contents.replace(match_group,text_to_replace)
-    return trimmed_contents
+# def add_lead_trail_spaces(op_list, trimmed_contents):
+#     for opr in op_list:
+#         for opmatch in re.finditer(opr, trimmed_contents):
+#             match_group = opmatch.group()
+#             first_character = match_group[0]
+#             last_character = match_group[-1]
+#             text_to_replace = match_group.replace(last_character,' '+ last_character)
+#             trimmed_contents = trimmed_contents.replace(match_group,text_to_replace)
+#     return trimmed_contents
 
 def parse_queries():
     for filename, query_text in query_dict.items():
@@ -93,12 +93,13 @@ def parse_queries():
         where_query_block = re.search("WHERE(.+?);", query_text)
         where_block = where_query_block.group(1)
         modified_query = rem_betweens(where_block)
+        or_predicate_block(modified_query,tbl_ref_list,or_predicate_set)
         modified_subquery, or_predicate_set, and_or_predicate_set = or_predicate_block(modified_query,tbl_ref_list,or_predicate_set)
         #To write the modified query to file
         # new_queryfile(filename,query_text,where_block,and_predicate_block)
         join_set, and_predicate_set, or_predicate_set = get_all_sets(modified_subquery,tbl_ref_list,or_predicate_set)
         print('\nQuery Number:',filename,'\n','Table Set:',table_set,'\n Join Set:',join_set,'\n AND Predicate Set:',and_predicate_set,'\n OR Predicate Set:',or_predicate_set,'\n Nested OR Predicate Set:',and_or_predicate_set,'\nCardinality:',cardinality,'\n')
-        write_json_file(table_set)
+        # write_json_file(table_set)
 
 def write_json_file(set):
     with open('sets.json', 'a', encoding='utf-8') as f:
@@ -116,7 +117,6 @@ def get_table_set(from_block):
         tbl_ref_list[tbl_alias] = tbl_name
         if tbl_name in encoded_tbl_dict:
             table_set.append(encoded_tbl_dict[tbl_name])
-    # print(tbl_ref_list)
     return table_set, tbl_ref_list
 
 def rem_betweens(where_block):
@@ -137,41 +137,36 @@ def or_predicate_block(modified_query,tbl_ref_list,or_predicate_set):
     and_or_predicate_set = []
     or_match = re.search('\sAND(\s\()',modified_query)
     if(or_match):
-        for opmatch in re.finditer('\s(AND\s\(.+\)\sAND)\s',modified_query):
+        for opmatch in re.finditer('AND\s\((.+?OR.+?)\)\sAND',modified_query):
             match_group = opmatch.group()
-            if('OR'.center(4) in match_group):
-                begining_subpart_rem = ('AND'.center(5))+'('
-                ending_subpart_rem = ')'+('AND'.center(5))
-                match_block = match_group.replace(begining_subpart_rem,'').replace(ending_subpart_rem,'')
-                or_query_blocks = match_block.split('OR')
-                lhs = or_query_blocks[0]
-                rhs = or_query_blocks[1]
-                if((('AND').center(5) in lhs) or (('AND').center(5) in rhs)):
-                    #go to or and predicate set function
-                    if(('AND').center(5) in lhs):
-                        lhs = lhs.replace('(','').replace(')','')
-                        and_group = lhs.split('AND')
-                        or_col = rhs
-                    else:
-                        rhs = rhs.replace('(','').replace(')','')
-                        and_group = rhs.split('AND')
-                        or_col = lhs
-                    first_grp = and_group[0].strip()
-                    second_grp = and_group[1].strip()
-                    or_col = or_col.strip()
-                    nested_blocks = [first_grp,second_grp,or_col]
-                    for item in nested_blocks:
-                        opt = check_operator(item)
-                        and_or_predicate_set = get_and_or_predicate_set(item,opt,tbl_ref_list,and_or_predicate_set)
-                else:
-                    for or_block in or_query_blocks:
-                        or_block = or_block.strip()
-                        opt_type = check_operator(or_block)
-                        or_predicate_set = get_or_predicate_set(or_block,opt_type,tbl_ref_list,or_predicate_set)
-                modified_query = modified_query.replace(match_group,'AND'.center(5))
+            match_block = match_group.replace('AND (','').replace(') AND','')
+            or_query_blocks = match_block.split('OR')
+            left_block = or_query_blocks[0].strip()
+            right_block = or_query_blocks[1].strip()
+            if(left_block.startswith('(') and left_block.endswith(')')):
+                left_block = left_block[1:-1]
+            if(right_block.startswith('(') and right_block.endswith(')')):
+                right_block = right_block[1:-1]
+            if((('AND').center(5) in left_block) or (('AND').center(5) in right_block)):
+                if(('AND').center(5) in left_block):
+                    and_group = left_block.split('AND')
+                    or_col = right_block
+                elif(('AND').center(5) in right_block):
+                    and_group = right_block.split('AND')
+                    or_col = left_block
+                and_group1 = and_group[0].strip()
+                and_group2 = and_group[1].strip()
+                nested_blocks = [and_group1,and_group2,or_col]
+                for item in nested_blocks:
+                    opt = check_operator(item)
+                    and_or_predicate_set = get_and_or_predicate_set(item,opt,tbl_ref_list,and_or_predicate_set)
             else:
-                match_block = match_group.replace(' (',' ').replace(') ',' ')
-                modified_query = modified_query.replace(match_group,match_block)
+                #not a nested OR case
+                for or_block in or_query_blocks:
+                    or_block = or_block.strip()
+                    opt_type = check_operator(or_block)
+                    or_predicate_set = get_or_predicate_set(or_block,opt_type,tbl_ref_list,or_predicate_set)
+            modified_query = modified_query.replace(match_group,'AND').strip()
     return modified_query, or_predicate_set, and_or_predicate_set
 
 def get_and_or_predicate_set(item,operator_type,tbl_ref_list,and_or_predicate_set):
