@@ -209,29 +209,29 @@ def get_all_sets(modified_subquery,tbl_ref_list,or_predicate_set):
     return join_set, and_predicate_set, or_predicate_set
 
 def check_operator(query_block):
-    if(re.search('\s(=)\s',query_block)):
+    if('=' in query_block) and ('>' not in query_block) and ('<' not in query_block) and ('!' not in query_block):
         operator_type = '='
-    elif(re.search('\s(>)\s',query_block)):
+    elif('>' in query_block):
+        if('=' in query_block):
+            operator_type = '>='
         operator_type = '>'
-    elif(re.search('\s(<)\s',query_block)):
+    elif('<' in query_block):
+        if('=' in query_block):
+            operator_type = '<='
         operator_type = '<'
-    elif(re.search('\s(>=)\s',query_block)):
-        operator_type = '>='
-    elif(re.search('\s(<=)\s',query_block)):
-        operator_type = '<='
-    elif(re.search('\s(!=)\s',query_block)):
+    elif('!' in query_block) and ('=' in query_block):
         operator_type = '!='
-    elif(re.search('\s(LIKE)\s',query_block)):
-        if(re.search('\s(NOT\sLIKE)\s',query_block)):
+    elif('LIKE' in query_block):
+        if('NOT' in query_block):
             operator_type = 'NOT LIKE'
         else:
             operator_type = 'LIKE'
-    elif(re.search('\s(IS)\s',query_block)):
-        if(re.search('\s(IS\sNOT)\s',query_block)):
+    elif('IS' in query_block):
+        if('NOT' in query_block):
             operator_type = 'IS NOT'
         else:
             operator_type = 'IS'
-    elif(re.search('\s(IN)\s',query_block)):
+    elif('IN',query_block):
         operator_type = 'IN'
     else:
         print('Operator not found in ',query_block)
@@ -340,17 +340,17 @@ if __name__ == "__main__":
     if(conn):
         col_df = column_df()
         encoded_col_df = encode_df(col_df)
-        makecsv(encoded_col_df,"encoded_col_vectors.csv")
+        # makecsv(encoded_col_df,"encoded_col_vectors.csv")
         encoded_col_dict = encoded_col_df.set_index('column_name').T.to_dict('list')
         tbl_df = table_df()
         encoded_tbl_df = encode_df(tbl_df)
-        makecsv(encoded_tbl_df,"encoded_tbl_vectors.csv")
+        # makecsv(encoded_tbl_df,"encoded_tbl_vectors.csv")
         encoded_tbl_dict = encoded_tbl_df.set_index('table_name').T.to_dict('list')
         op_df = operator_df()
         encoded_operator_df = encode_df(op_df)
-        makecsv(encoded_operator_df,"encoded_op_vectors.csv")
+        # makecsv(encoded_operator_df,"encoded_op_vectors.csv")
         encoded_op_dict = encoded_operator_df.set_index('operator_type').T.to_dict('list')
-        # query_dict = get_queries()
-        # max_cardinality, min_cardinality = get_logcardinalities()
-        # parse_queries()
+        query_dict = get_queries()
+        max_cardinality, min_cardinality = get_logcardinalities()
+        parse_queries()
         dbdisconnect()
