@@ -54,7 +54,7 @@ def new_queryfile(filename,query_text,where_block,and_predicate_block):
 def get_queries():
     query_dict = {}
     #read all query files in the JOB
-    allfiles = glob.glob('test' + '/*.sql', recursive=True)
+    allfiles = glob.glob('queries' + '/*.sql', recursive=True)
     for queryfile in allfiles:
         filename = os.path.basename(queryfile)
         with open(queryfile, 'r') as f:
@@ -65,22 +65,8 @@ def get_queries():
             min_match = re.search("\sMIN(.+?)(\))",trimmed_contents)
             if(min_match):
                 trimmed_contents = trimmed_contents.replace('MIN','')
-            #make sure each opeartor (=,>,<,>=,<=,,!=) are separated by a leading and trailing whitespace character
-            # op_list = ['\s=\S','\s>\S','\s<\S','\s!=\S','\s>=\S','\s<=\S']
-            # new_trimmed_contents = add_lead_trail_spaces(op_list, trimmed_contents)
-            #store the query filename and the cleaned queries in a dictionary
             query_dict[filename] = trimmed_contents
     return query_dict
-
-# def add_lead_trail_spaces(op_list, trimmed_contents):
-#     for opr in op_list:
-#         for opmatch in re.finditer(opr, trimmed_contents):
-#             match_group = opmatch.group()
-#             first_character = match_group[0]
-#             last_character = match_group[-1]
-#             text_to_replace = match_group.replace(last_character,' '+ last_character)
-#             trimmed_contents = trimmed_contents.replace(match_group,text_to_replace)
-#     return trimmed_contents
 
 def parse_queries():
     for filename, query_text in query_dict.items():
