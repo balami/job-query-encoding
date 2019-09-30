@@ -235,13 +235,16 @@ def breakdown_inblock(and_block,tbl_ref_list,or_predicate_set):
     return or_predicate_set
 
 def get_query_sets(operator_type,and_block,join_set,and_predicate_set,tbl_ref_list):
+    and_block = and_block.strip()
+    if(and_block.startswith('(') and and_block.endswith(')')):
+        and_block = and_block.replace('(','').replace(')','')
     sub_blocks = and_block.split(operator_type)
     col_alias = sub_blocks[0].strip()
     col_left = get_column_name(col_alias,tbl_ref_list)
     value = sub_blocks[1].strip()
     if(value.isdigit()):
         value = get_normalized_value(col_left,value)
-    if((operator_type =='=') and (not(value.isdigit()))):
+    if((operator_type =='=') and (type(value) is str)):
         reg_match_char = re.search('(\w*\.)',value)
         if(reg_match_char):
              col_right = get_column_name(value,tbl_ref_list)
