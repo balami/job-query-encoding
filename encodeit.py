@@ -80,7 +80,6 @@ def parse_queries():
         where_query_block = re.search("WHERE(.+?);", query_text)
         where_block = where_query_block.group(1)
         modified_query = rem_betweens(where_block)
-        or_predicate_block(modified_query,tbl_ref_list,or_predicate_set)
         modified_subquery, or_predicate_set, and_or_predicate_set = or_predicate_block(modified_query,tbl_ref_list,or_predicate_set)
         #To write the modified query to file
         # new_queryfile(filename,query_text,where_block,and_predicate_block)
@@ -148,7 +147,7 @@ def or_predicate_block(modified_query,tbl_ref_list,or_predicate_set):
                 nested_blocks = [and_group1,and_group2,or_col]
                 for item in nested_blocks:
                     opt = check_operator(item)
-                    and_or_predicate_set = get_and_or_predicate_set(item,opt,tbl_ref_list,and_or_predicate_set)
+                    and_or_predicate_set = get_or_predicate_set(item,opt,tbl_ref_list,and_or_predicate_set)
             else:
                 #not a nested OR case
                 for or_block in or_query_blocks:
@@ -157,16 +156,6 @@ def or_predicate_block(modified_query,tbl_ref_list,or_predicate_set):
                     or_predicate_set = get_or_predicate_set(or_block,opt_type,tbl_ref_list,or_predicate_set)
             modified_query = modified_query.replace(match_group,'AND').strip()
     return modified_query, or_predicate_set, and_or_predicate_set
-
-def get_and_or_predicate_set(item,operator_type,tbl_ref_list,and_or_predicate_set):
-    vals = item.split(operator_type)
-    col_id = vals[0].strip()
-    col_left = get_column_name(col_id,tbl_ref_list)
-    value = vals[1].strip()
-    if(value.isdigit()):
-        value = get_normalized_value(col_left,value)
-    and_or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+str(encoded_op_dict[operator_type][0])+','+str(value))
-    return and_or_predicate_set
 
 def get_or_predicate_set(new_or_block,operator_type,tbl_ref_list,or_predicate_set):
     vals = new_or_block.split(operator_type)
