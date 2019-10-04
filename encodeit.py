@@ -144,7 +144,7 @@ def or_predicate_block(modified_query,tbl_ref_list,or_predicate_set):
                     or_col = left_block
                 and_group1 = and_group[0].strip()
                 and_group2 = and_group[1].strip()
-                nested_blocks = [and_group1,and_group2,or_col]
+                nested_blocks = [or_col,and_group1,and_group2]
                 for item in nested_blocks:
                     opt = check_operator(item)
                     and_or_predicate_set = get_or_predicate_set(item,opt,tbl_ref_list,and_or_predicate_set)
@@ -187,11 +187,13 @@ def check_operator(query_block):
     elif('>' in query_block):
         if('=' in query_block):
             operator_type = '>='
-        operator_type = '>'
+        else:
+            operator_type = '>'
     elif('<' in query_block):
         if('=' in query_block):
             operator_type = '<='
-        operator_type = '<'
+        else:
+            operator_type = '<'
     elif('!' in query_block) and ('=' in query_block):
         operator_type = '!='
     elif('LIKE' in query_block):
