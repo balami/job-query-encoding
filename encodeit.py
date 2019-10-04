@@ -295,11 +295,12 @@ def get_estimate(query_text):
     indices = [res.index(i) for i in res if 'rows' in i]
     actual_ind = indices[1]
     actual_rows = int(re.search(r'\d+', res[actual_ind]).group())
-    selectivity_val = normalize_selectivity_val(actual_rows)
+    log_actual_rows = math.log10(actual_rows)
+    selectivity_val = normalize_selectivity_val(log_actual_rows)
     return selectivity_val
 
-def normalize_selectivity_val(actual_rows):
-    sel_val = (actual_rows-min_cardinality)/(max_cardinality-1)
+def normalize_selectivity_val(log_actual_rows):
+    sel_val = (log_actual_rows-min_cardinality)/(max_cardinality-min_cardinality)
     return sel_val;
 
 def get_logcardinalities():
