@@ -104,7 +104,8 @@ def get_table_set(from_block):
         tbl_alias = item[1]
         tbl_ref_list[tbl_alias] = tbl_name
         if tbl_name in encoded_tbl_dict:
-            table_set.append(encoded_tbl_dict[tbl_name])
+            table_name = encoded_tbl_dict[tbl_name]
+            table_set.append(table_name[0])
     return table_set, tbl_ref_list
 
 def rem_betweens(where_block):
