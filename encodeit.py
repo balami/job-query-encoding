@@ -279,14 +279,16 @@ def get_and_predicate_set(col_alias,operator_type,value,and_predicate_set):
     and_predicate_set.append(str(encoded_col_dict[col_alias][0])+','+str(encoded_op_dict[operator_type][0])+','+str(value))
 
 def get_estimate(query_text):
-    query_to_run = 'EXPLAIN ANALYZE '+ query_text
-    cur.execute(query_to_run)
-    records = cur.fetchall()
-    res = str(records).split(" ")
-    indices = [res.index(i) for i in res if 'rows' in i]
-    actual_ind = indices[1]
-    actual_rows = int(re.search(r'\d+', res[actual_ind]).group())
-    log_actual_rows = math.log10(actual_rows)
+    query_block = re.search("SELECT\s(.+?)FROM\s", query_text)
+    block_to_rem = query_block.group(1)
+    modified_query = query_text.replace(block_to_rem,'COUNT(*)')
+    cur.execute(modified_query)
+    num_rows = cur.fetchone()
+    actual_rows = num_rows[0]
+    if(actual_rows!=0):
+        log_actual_rows = math.log10(actual_rows)
+    else:
+        log_actual_rows = 0
     selectivity_val = normalize_selectivity_val(log_actual_rows)
     return selectivity_val
 
