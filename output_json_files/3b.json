@@ -14,11 +14,10 @@
     ],
     "AND Predicate": [
         "00110101,00111,'%sequel%'",
+        "01000001,00001,'Bulgaria'",
         "01101001,00010,0.9352517986"
     ],
-    "OR Predicate": [
-        "01000001,00001,'Bulgaria'"
-    ],
+    "OR Predicate": [],
     "Nested OR Predicate": [],
     "Cardinality": 0.1063971454872062
 }
