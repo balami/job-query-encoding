@@ -297,12 +297,8 @@ def get_estimate(query_text):
         log_actual_rows = math.log10(actual_rows)
     else:
         log_actual_rows = 0
-    selectivity_val = normalize_selectivity_val(log_actual_rows)
+    selectivity_val = sel_val = (log_actual_rows-min_cardinality)/(max_cardinality-min_cardinality)
     return selectivity_val
-
-def normalize_selectivity_val(log_actual_rows):
-    sel_val = (log_actual_rows-min_cardinality)/(max_cardinality-min_cardinality)
-    return sel_val;
 
 def get_logcardinalities():
     #get cardinalities of all queries and take logarithm of them
