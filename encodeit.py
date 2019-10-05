@@ -165,11 +165,7 @@ def get_or_predicate_set(new_or_block,operator_type,tbl_ref_list,or_predicate_se
     value = vals[1].strip()
     if(value.isdigit()):
         value = get_normalized_value(col_left,value)
-    if(operator_type=='IN'):
-        encoded_op_val = str(encoded_op_dict['='][0])
-    else:
-        encoded_op_val = str(encoded_op_dict[operator_type][0])
-    or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+encoded_op_val+','+str(value))
+    or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+str(encoded_op_dict[operator_type][0])+','+str(value))
     return or_predicate_set
 
 def get_all_sets(modified_subquery,tbl_ref_list,or_predicate_set):
@@ -181,7 +177,7 @@ def get_all_sets(modified_subquery,tbl_ref_list,or_predicate_set):
     for and_block in and_block_list:
         operator_type = check_operator(and_block)
         if(operator_type=='IN'):
-             or_predicate_set = breakdown_inblock(and_block,tbl_ref_list,or_predicate_set)
+             breakdown_inblock(and_block,tbl_ref_list,or_predicate_set,and_predicate_set)
         else:
             get_query_sets(operator_type,and_block,join_set,and_predicate_set,tbl_ref_list)
     return join_set, and_predicate_set, or_predicate_set
@@ -218,17 +214,24 @@ def check_operator(query_block):
         quit()
     return operator_type
 
-def breakdown_inblock(and_block,tbl_ref_list,or_predicate_set):
+def breakdown_inblock(and_block,tbl_ref_list,or_predicate_set,and_predicate_set):
     sub_blocks = and_block.split('IN')
     col_id = sub_blocks[0].strip()
     listofitems = sub_blocks[1].strip().replace('(','').replace(')','')
     listvalues = listofitems.split(',')
     new_or_block = []
     for item in listvalues:
-        new_or_block = col_id+'='.center(3)+item
         operator_type = '='
-        or_predicate_set = get_or_predicate_set(new_or_block,operator_type,tbl_ref_list,or_predicate_set)
-    return or_predicate_set
+        if(len(listvalues)==1):
+            col_id = col_id.strip()
+            col_id = get_column_name(col_id,tbl_ref_list)
+            value = item.strip()
+            if(value.isdigit()):
+                value = get_normalized_value(col_id,value)
+            get_and_predicate_set(col_id,operator_type,value,and_predicate_set)
+        else:
+            new_or_block = col_id+'='.center(3)+item
+            or_predicate_set = get_or_predicate_set(new_or_block,operator_type,tbl_ref_list,or_predicate_set)
 
 def get_query_sets(operator_type,and_block,join_set,and_predicate_set,tbl_ref_list):
     and_block = and_block.strip()
