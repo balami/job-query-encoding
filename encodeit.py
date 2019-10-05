@@ -165,7 +165,11 @@ def get_or_predicate_set(new_or_block,operator_type,tbl_ref_list,or_predicate_se
     value = vals[1].strip()
     if(value.isdigit()):
         value = get_normalized_value(col_left,value)
-    or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+str(encoded_op_dict[operator_type][0])+','+str(value))
+    if(operator_type=='IN'):
+        encoded_op_val = str(encoded_op_dict['='][0])
+    else:
+        encoded_op_val = str(encoded_op_dict[operator_type][0])
+    or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+encoded_op_val+','+str(value))
     return or_predicate_set
 
 def get_all_sets(modified_subquery,tbl_ref_list,or_predicate_set):
