@@ -20,8 +20,9 @@ def get_col_datatypes():
 def write_to_file(tbl_name,records):
     filename = tbl_name+'.txt'
     for record in records:
-        with open(filename, 'a') as the_file:
-            the_file.write(record+"\n")
+        if(record!=""):
+            with open(filename, 'a') as the_file:
+                the_file.write(format(record)+"\n")
 
 if __name__ == "__main__":
     cur, conn = dbconnect()
