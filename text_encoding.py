@@ -20,7 +20,7 @@ def get_col_datatypes():
 def write_to_file(tbl_name,records):
     filename = tbl_name+'.txt'
     for record in records:
-        if(record!="") or (record!='None') or (record is not None):
+        if(record!="") and (record!='None') and (record is not None):
             with open(filename, 'a', encoding="utf-8") as the_file:
                 the_file.write(format(record)+"\n")
 
