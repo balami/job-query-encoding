@@ -106,7 +106,8 @@ def get_table_set(from_block):
         if tbl_name in encoded_tbl_dict:
             table_name = encoded_tbl_dict[tbl_name]
             table_set.append(table_name[0])
-    return table_set, tbl_ref_list
+        final_table_set = list(dict.fromkeys(table_set))
+    return final_table_set, tbl_ref_list
 
 def rem_betweens(where_block):
     if('BETWEEN' in where_block):
@@ -166,7 +167,6 @@ def get_or_predicate_set(new_or_block,operator_type,tbl_ref_list,or_predicate_se
     if(value.isdigit()):
         value = get_normalized_value(col_left,value)
     if(col_left =='name.gender'):
-        print(value)
         if(value =="\'m\'"):
             value = 0
         elif(value =="\'f\'"):
@@ -302,7 +302,6 @@ def get_and_predicate_set(col_alias,operator_type,value,and_predicate_set):
             value = 1
         else:
             value =-1
-        print(value)
     if(value =='NULL'):
         and_predicate_set.append(str(encoded_col_dict[col_alias][0])+','+str(encoded_op_dict[operator_type][0])+','+repr(str(value)))
     else:
