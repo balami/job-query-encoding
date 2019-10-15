@@ -165,7 +165,10 @@ def get_or_predicate_set(new_or_block,operator_type,tbl_ref_list,or_predicate_se
     value = vals[1].strip()
     if(value.isdigit()):
         value = get_normalized_value(col_left,value)
-    or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+str(encoded_op_dict[operator_type][0])+','+str(value))
+    if(value =='NULL'):
+        or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+str(encoded_op_dict[operator_type][0])+','+repr(str(value)))
+    else:
+        or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+str(encoded_op_dict[operator_type][0])+','+str(value))
     return or_predicate_set
 
 def get_all_sets(modified_subquery,tbl_ref_list,or_predicate_set):
@@ -284,7 +287,10 @@ def get_join_set(col_left,operator_type,col_right,join_set):
         join_set.append(str(encoded_col_dict[col_right][0])+str(encoded_col_dict[col_left][0]))
 
 def get_and_predicate_set(col_alias,operator_type,value,and_predicate_set):
-    and_predicate_set.append(str(encoded_col_dict[col_alias][0])+','+str(encoded_op_dict[operator_type][0])+','+str(value))
+    if(value =='NULL'):
+        and_predicate_set.append(str(encoded_col_dict[col_alias][0])+','+str(encoded_op_dict[operator_type][0])+','+repr(str(value)))
+    else:
+        and_predicate_set.append(str(encoded_col_dict[col_alias][0])+','+str(encoded_op_dict[operator_type][0])+','+str(value))
 
 def get_estimate(query_text):
     query_block = re.search("SELECT\s(.+?)FROM\s", query_text)
