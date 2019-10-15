@@ -24,7 +24,6 @@
         "0001011001001111"
     ],
     "AND Predicate": [
-        "00000100,00111,'%a%'",
         "00110011,00001,'mini biography'",
         "00111010,00001,'features'",
         "01010111,00111,'D%'",
@@ -35,5 +34,5 @@
     ],
     "OR Predicate": [],
     "Nested OR Predicate": [],
-    "Cardinality": 0.18329102562905603
+    "Cardinality": 0.20026502895129433
 }

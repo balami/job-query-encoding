@@ -24,7 +24,6 @@
     "AND Predicate": [
         "00100011,00001,'[us]'",
         "01010001,00001,1",
-        "01010110,00111,'%An%'",
         "01100000,00001,'actress'"
     ],
     "OR Predicate": [
@@ -34,5 +33,5 @@
         "00010111,00001,'voice: English version'"
     ],
     "Nested OR Predicate": [],
-    "Cardinality": 0.5953073409123754
+    "Cardinality": 0.824736509032076
 }
