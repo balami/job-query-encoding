@@ -30,13 +30,13 @@ def get_col_datatypes():
             cur.execute(sql.SQL("SELECT {} FROM {}").format(sql.Identifier(col.strip()),sql.Identifier(tbl.strip())))
             records =  [r[0] for r in cur.fetchall()]
             write_to_file(records)
-        os.system ("bash -c 'truncate -s-1 out.txt'")
-        os.system ("bash -c 'echo "">> out.txt'")
+        os.system ("bash -c 'truncate -s-1 output.txt'")
+        os.system ("bash -c 'echo "">> output.txt'")
 
 def write_to_file(records):
     for record in records:
         if(record!="") and (record!='None') and (record is not None):
-            with open('case2.txt', 'a', encoding="utf-8") as the_file:
+            with open('output.txt', 'a', encoding="utf-8") as the_file:
                 the_file.write(format(record)+",")
 
 if __name__ == "__main__":
