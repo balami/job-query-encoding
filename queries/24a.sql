@@ -26,7 +26,6 @@ WHERE ci.note IN ('(voice)',
   AND (mi.info LIKE 'Japan:%201%'
        OR mi.info LIKE 'USA:%201%')
   AND n.gender ='f'
-  AND n.name LIKE '%An%'
   AND rt.role ='actress'
   AND t.production_year > 2010
   AND t.id = mi.movie_id

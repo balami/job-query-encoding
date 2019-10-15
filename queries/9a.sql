@@ -18,7 +18,6 @@ WHERE ci.note IN ('(voice)',
   AND (mc.note LIKE '%(USA)%'
        OR mc.note LIKE '%(worldwide)%')
   AND n.gender ='f'
-  AND n.name LIKE '%Ang%'
   AND rt.role ='actress'
   AND t.production_year BETWEEN 2005 AND 2015
   AND ci.movie_id = t.id

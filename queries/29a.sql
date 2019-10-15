@@ -32,7 +32,6 @@ WHERE cct1.kind ='cast'
   AND (mi.info LIKE 'Japan:%200%'
        OR mi.info LIKE 'USA:%200%')
   AND n.gender ='f'
-  AND n.name LIKE '%An%'
   AND rt.role ='actress'
   AND t.title = 'Shrek 2'
   AND t.production_year BETWEEN 2000 AND 2010

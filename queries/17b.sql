@@ -8,7 +8,6 @@ FROM cast_info AS ci,
      name AS n,
      title AS t
 WHERE k.keyword ='character-name-in-title'
-  AND n.name LIKE 'Z%'
   AND n.id = ci.person_id
   AND ci.movie_id = t.id
   AND t.id = mk.movie_id

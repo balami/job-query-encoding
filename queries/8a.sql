@@ -11,8 +11,6 @@ WHERE ci.note ='(voice: English version)'
   AND cn.country_code ='[jp]'
   AND mc.note LIKE '%(Japan)%'
   AND mc.note NOT LIKE '%(USA)%'
-  AND n1.name LIKE '%Yo%'
-  AND n1.name NOT LIKE '%Yu%'
   AND rt.role ='actress'
   AND an1.person_id = n1.id
   AND n1.id = ci.person_id

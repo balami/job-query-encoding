@@ -8,8 +8,7 @@ FROM aka_name AS an,
      name AS n,
      person_info AS pi,
      title AS t
-WHERE an.name LIKE '%a%'
-  AND it.info ='mini biography'
+WHERE it.info ='mini biography'
   AND lt.link ='features'
   AND n.name_pcode_cf LIKE 'D%'
   AND n.gender='m'
