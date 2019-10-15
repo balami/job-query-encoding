@@ -2,9 +2,9 @@ aka_name,000001
 aka_title,000010
 cast_info,000011
 char_name,000100
-comp_cast_type,000101
-company_name,000110
-company_type,000111
+company_name,000101
+company_type,000110
+comp_cast_type,000111
 complete_cast,001000
 info_type,001001
 keyword,001010

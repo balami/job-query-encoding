@@ -165,6 +165,14 @@ def get_or_predicate_set(new_or_block,operator_type,tbl_ref_list,or_predicate_se
     value = vals[1].strip()
     if(value.isdigit()):
         value = get_normalized_value(col_left,value)
+    if(col_left =='name.gender'):
+        print(value)
+        if(value =="\'m\'"):
+            value = 0
+        elif(value =="\'f\'"):
+            value = 1
+        else:
+            value =-1
     if(value =='NULL'):
         or_predicate_set.append(str(encoded_col_dict[col_left][0])+','+str(encoded_op_dict[operator_type][0])+','+repr(str(value)))
     else:
@@ -287,6 +295,14 @@ def get_join_set(col_left,operator_type,col_right,join_set):
         join_set.append(str(encoded_col_dict[col_right][0])+str(encoded_col_dict[col_left][0]))
 
 def get_and_predicate_set(col_alias,operator_type,value,and_predicate_set):
+    if(col_alias =='name.gender'):
+        if(value =="\'m\'"):
+            value = 0
+        elif(value =="\'f\'"):
+            value = 1
+        else:
+            value =-1
+        print(value)
     if(value =='NULL'):
         and_predicate_set.append(str(encoded_col_dict[col_alias][0])+','+str(encoded_op_dict[operator_type][0])+','+repr(str(value)))
     else:
@@ -325,21 +341,22 @@ def get_logcardinalities():
     min_cardinality = min(log_cardinalities)
     return max_cardinality, min_cardinality
 
+
 if __name__ == "__main__":
     global cur, encoded_col_dict, encoded_tbl_dict, encoded_op_dict, query_dict, max_cardinality, min_cardinality
     cur, conn = dbconnect()
     if(conn):
         col_df = column_df()
         encoded_col_df = encode_df(col_df)
-        # makecsv(encoded_col_df,"encoded_col_vectors.csv")
+        makecsv(encoded_col_df,"encoded_col_vectors.csv")
         encoded_col_dict = encoded_col_df.set_index('column_name').T.to_dict('list')
         tbl_df = table_df()
         encoded_tbl_df = encode_df(tbl_df)
-        # makecsv(encoded_tbl_df,"encoded_tbl_vectors.csv")
+        makecsv(encoded_tbl_df,"encoded_tbl_vectors.csv")
         encoded_tbl_dict = encoded_tbl_df.set_index('table_name').T.to_dict('list')
         op_df = operator_df()
         encoded_operator_df = encode_df(op_df)
-        # makecsv(encoded_operator_df,"encoded_op_vectors.csv")
+        makecsv(encoded_operator_df,"encoded_op_vectors.csv")
         encoded_op_dict = encoded_operator_df.set_index('operator_type').T.to_dict('list')
         query_dict = get_queries()
         max_cardinality, min_cardinality = get_logcardinalities()

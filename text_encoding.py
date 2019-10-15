@@ -7,17 +7,21 @@ from collections import defaultdict
 def get_col_datatypes():
     all_tbls = []
     tbl_dict = {}
+    col_rem_list = ('md5sum','phonetic_code','name_pcode_cf','gender')
+    col_type_check = ('text','character varying')
     cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' GROUP BY table_name")
     results =  [r[0] for r in cur.fetchall()]
     for tbl in results:
-        if(tbl == 'company_type'):
-            cur.execute("SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_name = '%s'" % tbl)
-            all_results = cur.fetchall()
-            for item in all_results:
-                tbl_name = item[0]
-                col_name = item[1]
-                d_type = item[2]
-                if((d_type == 'integer') or (d_type =='character varying')) and (col_name!='md5sum') and (col_name!='phonetic_code'):
+        cur.execute("SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_name = '%s'" % tbl)
+        all_results = cur.fetchall()
+        for item in all_results:
+            tbl_name = item[0]
+            col_name = item[1]
+            d_type = item[2]
+            if((d_type in col_type_check) and (col_name not in col_rem_list)):
+                if((tbl_name =='movie_info_idx') and (col_name =='info')):
+                    pass
+                else:
                     all_tbls.append([tbl_name,col_name])
     for key, val in all_tbls:
         tbl_dict.setdefault(key, []).append(val)
@@ -32,7 +36,7 @@ def get_col_datatypes():
 def write_to_file(records):
     for record in records:
         if(record!="") and (record!='None') and (record is not None):
-            with open('out.txt', 'a', encoding="utf-8") as the_file:
+            with open('case2.txt', 'a', encoding="utf-8") as the_file:
                 the_file.write(format(record)+",")
 
 if __name__ == "__main__":
