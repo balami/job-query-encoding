@@ -21,9 +21,10 @@
         "0011111001001100"
     ],
     "AND Predicate": [
-        "00110101,00001,'character-name-in-title'"
+        "00110101,00001,'character-name-in-title'",
+        "01010110,00111,'X%'"
     ],
     "OR Predicate": [],
     "Nested OR Predicate": [],
-    "Cardinality": 1.0
+    "Cardinality": 0.49971489225788823
 }
