@@ -9,6 +9,7 @@ FROM cast_info AS ci,
      title AS t
 WHERE cn.country_code ='[us]'
   AND k.keyword ='character-name-in-title'
+  AND n.name LIKE 'B%'
   AND n.id = ci.person_id
   AND ci.movie_id = t.id
   AND t.id = mk.movie_id

@@ -9,6 +9,8 @@ FROM aka_name AS an,
      person_info AS pi,
      title AS t
 WHERE an.name IS NOT NULL
+  AND (an.name LIKE '%a%'
+       OR an.name LIKE 'A%')
   AND it.info ='mini biography'
   AND lt.link IN ('references',
                   'referenced in',
@@ -16,7 +18,8 @@ WHERE an.name IS NOT NULL
                   'featured in')
   AND n.name_pcode_cf BETWEEN 'A' AND 'F'
   AND (n.gender='m'
-       OR n.gender = 'f')
+       OR (n.gender = 'f'
+           AND n.name LIKE 'A%'))
   AND pi.note IS NOT NULL
   AND t.production_year BETWEEN 1980 AND 2010
   AND n.id = an.person_id
